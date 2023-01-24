@@ -1,25 +1,24 @@
-import 'dart:convert';
-
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
+import 'package:provider_example/data/models/my_response/response_model.dart';
 import 'package:provider_example/data/models/users_cards_model.dart';
 
-class ApiService {
-  Future<List<UsersCardsModel>> getAllCards() async {
+import 'api_client.dart';
+
+class ApiService extends ApiClient {
+  Future<MyResponse> getAllCards() async {
+    MyResponse myResponse = MyResponse(error: "");
     try {
-      Response response = await get(
-          Uri.parse('https://banking-api.free.mockoapp.net/user_cards'));
-      if (response.statusCode >= 200 && response.statusCode <= 300) {
-        var jsonData = jsonDecode(response.body);
-        List<UsersCardsModel> cards = (jsonData as List?)
+      Response response = await dio.get(dio.options.baseUrl);
+      if (response.statusCode! >= 200 && response.statusCode! < 300) {
+        myResponse.data = (response.data as List?)
                 ?.map((e) => UsersCardsModel.fromJson(e))
                 .toList() ??
             [];
-        return cards;
-      } else {
-        throw Exception();
       }
-    } catch (e) {
-      throw Exception(e);
+    } catch (err) {
+      myResponse.error = err.toString();
     }
+
+    return myResponse;
   }
 }

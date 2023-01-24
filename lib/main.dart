@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider_example/data/api_service/api_service.dart';
 import 'package:provider_example/data/repository/app_repository.dart';
-import 'package:provider_example/screens/users_cards/users_cards.dart';
-import 'package:provider_example/view_model/cards_view_model.dart';
+import 'package:provider_example/screens/users_cards/cards_single_bloc.dart';
+import 'package:provider_example/screens/users_cards/users_cards_bloc.dart';
+import 'package:provider_example/screens/users_cards/users_cards_cubit.dart';
+
+import 'screens/users_cards/cards_single_cubit.dart';
 
 void main() {
-  AppRepository appRepository = AppRepository(apiService: ApiService());
-  CardsViewModel cardsViewModel = CardsViewModel(appRepository: appRepository);
   runApp(
-    MultiProvider(
+    MultiRepositoryProvider(
       providers: [
-         ChangeNotifierProvider(create: (_) => cardsViewModel),
+        RepositoryProvider(
+          create: (context) => AppRepository(
+            apiService: ApiService(),
+          ),
+        ),
       ],
-      child: const MyApp(),
+      child: MyApp(),
     ),
   );
 }
@@ -29,7 +34,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: UsersCardsPage() ,
+      home: UsersCardsSingleCubitPage(),
     );
   }
 }
